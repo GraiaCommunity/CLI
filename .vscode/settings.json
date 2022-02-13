@@ -1,0 +1,11 @@
+{
+    "python.linting.enabled": false,
+    "cSpell.words": [
+        "Alconna",
+        "disp",
+        "httpx",
+        "tomlkit",
+        "typer",
+        "graia"
+    ]
+}

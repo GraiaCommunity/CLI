@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Remove Test Environment",
+            "type": "shell",
+            "command": "Remove-Item ${workspaceFolder}/test_env -Recurse -Force",
+        },
+        {
+            "label": "Create Test Environment",
+            "type": "shell",
+            "command": "mkdir ${workspaceFolder}/test_env",
+        },
+        {
+            "label": "Cleanup Test Environment",
+            "dependsOn": [
+                "Remove Test Environment",
+                "Create Test Environment"
+            ],
+            "dependsOrder": "sequence"
+        }
+    ]
+}

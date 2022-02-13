@@ -1,0 +1,21 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "graiax init",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/entry.py",
+            "args": [
+                "init"
+            ],
+            "cwd": "${workspaceFolder}/test_env",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "preLaunchTask": "Cleanup Test Environment",
+        }
+    ]
+}
