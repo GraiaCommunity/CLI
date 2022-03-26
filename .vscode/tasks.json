@@ -6,7 +6,7 @@
         {
             "label": "Remove Test Environment",
             "type": "shell",
-            "command": "Remove-Item ${workspaceFolder}/test_env -Recurse -Force",
+            "command": "Get-ChildItem | Where-Object Name -Like 'test_env' | ForEach-Object { Remove-Item -LiteralPath $_.Name -Recurse -Force}",
         },
         {
             "label": "Create Test Environment",

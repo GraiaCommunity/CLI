@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "graiax-cli"
-version = "0.10.0"
+version = "0.11.0"
 description = "Command line tool for Graia Framework."
 authors = ["BlueGlassBlock <blueglassblock@outlook.com>"]
 license = "MIT"
@@ -19,7 +19,6 @@ classifiers = [
 name = "tuna-tsinghua"
 default = false
 url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/"
-
 
 [[tool.poetry.source]]
 name = "aliyun"
@@ -42,13 +41,13 @@ watchgod = ["watchgod"]
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
 isort = "^5.10.1"
-
+pre-commit = "^2.17.0"
 
 [tool.poetry.scripts]
 graiax = "graiax.cli:main"
 
-
 [tool.pdm]
+
 [build-system]
 requires = ["pdm-pep517"]
 build-backend = "pdm.pep517.api"

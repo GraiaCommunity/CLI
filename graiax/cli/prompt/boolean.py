@@ -50,7 +50,9 @@ class BooleanPrompt(PromptABC[bool]):
         def submit(buffer: Buffer) -> bool:
             input = buffer.document.text
             if not input:
-                buffer.document.insert_after(str(self.default))
+                buffer.set_document(
+                    buffer.document.insert_after({True: "Y", False: "N"}.get(self.default, ""))
+                )
                 get_app().exit(result=self.default)
             elif input.lower() in true_pattern:
                 get_app().exit(result=True)

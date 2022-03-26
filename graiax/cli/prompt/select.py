@@ -8,8 +8,6 @@ from typing import (
     List,
     Optional,
     Protocol,
-    Set,
-    Tuple,
     TypeVar,
 )
 
@@ -20,7 +18,6 @@ from prompt_toolkit.layout import Layout
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension
-from prompt_toolkit.mouse_events import MouseEvent, MouseEventType
 from prompt_toolkit.styles import Style
 
 from . import Choice, PromptABC
@@ -35,7 +32,7 @@ class SupportsIn(Protocol, Generic[R]):
 
 class NonNegativeRange:
     def __contains__(self, val: int):
-        return 0 <= val
+        return val >= 0
 
     def __str__(self):
         return "range(0, inf)"
@@ -44,8 +41,8 @@ class NonNegativeRange:
 class SelectPrompt(PromptABC[List[Choice[R]]]):
     """Select Prompt that supports auto scrolling.
     ```
-    [?] Make some choices? (↑ & ↓ : 移动, Space: 选择, Alt(Meta) + Enter: 提交)
-    └┬┘ └─────┬──────────┘ └────────────────────┬─────────────────────┘
+    [?] Make some choices? (↑ & ↓ : 移动, Space: 选择, Enter: 提交)
+    └┬┘ └─────┬──────────┘ └────────────────────┬──────────────────┘
     mark  annotation                           hint
     ❯   ●  A
     ↑ pointer
@@ -64,11 +61,11 @@ class SelectPrompt(PromptABC[List[Choice[R]]]):
         pointer: str = "❯",
         selected: str = "●",
         unselected: str = "○",
-        hint: str = "(↑ & ↓ : 移动, Space: 选择, Alt(Meta) + Enter: 提交)",
+        hint: str = "(↑ & ↓ : 移动, Space: 选择, Enter: 提交)",
         validator: Optional[Callable[[List[Choice[R]]], bool]] = None,
         range: SupportsIn[int] = NonNegativeRange(),
         overflow_action: Callable[[Deque[int]], Any] = Deque.pop,
-        default: Iterable[Choice[R]] = (),
+        default: Iterable[int] = (),
     ):
         self.annotation: str = annotation
         self.choices: List[Choice[R]] = choices
@@ -81,6 +78,7 @@ class SelectPrompt(PromptABC[List[Choice[R]]]):
         self.cur_index: int = 0
         self.disp_index: int = 0
         self.answered: bool = False
+        self.default: Iterable[int] = default
         self.select_deque: Deque[int] = Deque(default)
         self.overflow_action = overflow_action
         self.range = range
@@ -91,8 +89,8 @@ class SelectPrompt(PromptABC[List[Choice[R]]]):
 
     def make_layout(self) -> Layout:
         self.answered: bool = False
-        self.select_deque: Deque[int] = Deque()
-        layout = Layout(
+        self.select_deque: Deque[int] = Deque(self.default)
+        return Layout(
             HSplit(
                 [
                     Window(
@@ -112,7 +110,6 @@ class SelectPrompt(PromptABC[List[Choice[R]]]):
                 ]
             )
         )
-        return layout
 
     def make_style(self, style: Style) -> Style:
         default = Style(
@@ -145,11 +142,10 @@ class SelectPrompt(PromptABC[List[Choice[R]]]):
             else:
                 self.select_deque.remove(self.cur_index)
 
-        @kb.add("escape", "enter", eager=True)  # Alt + Enter
+        @kb.add("enter")
         def enter(event: KeyPressEvent):
-            if self.validator:
-                if not self.validator(self.get_result()):
-                    return
+            if self.validator and not self.validator(self.get_result()):
+                return
             self.answered = True
             event.app.exit(result=self.get_result())
 
@@ -200,7 +196,7 @@ class SelectPrompt(PromptABC[List[Choice[R]]]):
         return prompts
 
     def get_result(self) -> List[Choice[R]]:
-        return list(self.choices[i] for i in self.select_deque)
+        return [self.choices[i] for i in self.select_deque]
 
     def move_up(self) -> None:
         self.jump((self.cur_index - 1) % len(self.choices))
@@ -215,7 +211,7 @@ class SelectPrompt(PromptABC[List[Choice[R]]]):
             self.disp_index -= 1
         elif self.cur_index == len(self.choices) - 1:
             start_index = len(self.choices) - self.max_height + 1
-            self.disp_index = 0 if start_index < 0 else start_index
+            self.disp_index = max(start_index, 0)
         elif self.cur_index == end_index and end_index < len(self.choices) - 1:
             self.disp_index += 1
         elif self.cur_index == 0:

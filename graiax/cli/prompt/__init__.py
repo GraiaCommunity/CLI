@@ -39,10 +39,10 @@ class PromptABC(abc.ABC, Generic[Result_T]):
         default: Default_T = None,
         style: Optional[Style] = None,
     ) -> Union[Default_T, Result_T]:
-        print("")  # add a newline
+        print()
         app = self.build_app(style or Style([]))
         result: Result_T = app.run()
-        print("")  # add a newline
+        print()
         if result is None:
             return default
         return result
