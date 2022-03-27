@@ -18,7 +18,13 @@ def inject():
     tool_table: Table = data.setdefault("tool", tomlkit.table(True))
     graiax_table: Table = tool_table.setdefault("graiax", tomlkit.table())
     loader_table: Table = graiax_table.setdefault(
-        "loader", Table(Container(), Trivia(comment_ws="  ", comment="# Saya 会加载的模块"), False, False)
+        "loader",
+        Table(
+            Container(),
+            Trivia(comment_ws="  ", comment="# modules which will be loaded by graia-saya"),
+            False,
+            False,
+        ),
     )
     with open(pyproject_path, "w", encoding="utf-8") as f:
         tomlkit.dump(data, f)

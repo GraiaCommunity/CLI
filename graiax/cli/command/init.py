@@ -134,7 +134,7 @@ def init():
         return
     (choice,) = choices
     manager: str = choice.data
-    pprint("<b>INFO</b>: 验证包管理器存在")
+    pprint("<cyan>验证包管理器存在...</cyan>")
     try:
         subprocess.run([manager, "--version"])
     except FileNotFoundError:
@@ -143,14 +143,21 @@ def init():
         return
     if not toml_exist():
         pprint("<yellow>检测到 pyproject.toml 不存在...</yellow>")
-    try:
-        pprint(f"<b>INFO</b>: 使用 <magenta>{manager}</magenta> 创建项目元数据")
-        print()
-        globals()[manager]()
-        print()
-    except KeyboardInterrupt:
-        pprint("<b><red>! 终止操作 !</red></b>")
-        return
+        pprint(f"<cyan>在 <magenta>{os.getcwd()}</magenta> 下创建项目......</cyan>")
+        cont: bool = BooleanPrompt("继续创建？", default=True).prompt(default=True)
+        if not cont:
+            pprint("<b><red>终止操作</red></b>")
+            return
+        try:
+            pprint(f"使用 <magenta>{manager}</magenta> 创建项目元数据")
+            print()
+            globals()[manager]()
+            print()
+        except KeyboardInterrupt:
+            pprint("<b><red>! 终止操作 !</red></b>")
+            return
+    else:
+        pprint("<green>检测到 <magenta>pyproject.toml</magenta> 存在，直接注入数据</green>")
 
     from . import inject
 
