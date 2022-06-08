@@ -113,7 +113,7 @@ class BooleanPrompt(PromptABC[bool]):
         ]
         if self.default:
             prompt.append(("class:choice", "(Y/n)"))
-        elif self.default == False:
+        elif self.default is False:
             prompt.append(("class:choice", "(y/N)"))
         else:
             prompt.append(("class:choice", "(y/n)"))

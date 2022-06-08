@@ -1,5 +1,4 @@
 {
-    "python.linting.enabled": false,
     "cSpell.words": [
         "Alconna",
         "disp",
@@ -7,6 +6,6 @@
         "graia",
         "httpx",
         "tomlkit",
-        "typer"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "off"
 }

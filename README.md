@@ -25,10 +25,10 @@ _一个简明易用的 Graia 命令行工具_
 
 `graiax init` 交互式初始化一个 `Graia Framework` 项目 (Partly WIP)
 
-## 管理插件 (WIP)
+## 管理模块 (WIP)
 
-`graiax plugin new` 新建插件
+`graiax module new` 新建模块
 
-`graiax plugin list` 查看插件列表
+`graiax module list` 查看模块列表
 
-`graiax plugin add` 添加插件
+`graiax module add` 添加模块

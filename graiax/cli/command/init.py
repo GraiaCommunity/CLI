@@ -4,7 +4,6 @@ from collections import deque
 from pathlib import Path
 
 import tomlkit
-import typer
 
 from graiax.cli.prompt import Choice
 
@@ -14,23 +13,19 @@ from ..util import pprint
 extras_intro = """<b><cyan>\
 Scheduler: 任务计划器
 Alconna: 复杂但强大的命令解析器
+Richuru: 丰富的日志输出
 FastAPI: 用于提供反向适配器后端</cyan></b>
 """
 
 extra_prompt = SelectPrompt(
     "添加额外依赖？",
     choices=[
-        Choice("[graia]: 包括 Scheduler", "graia"),
-        Choice("[standard]: 包括 Scheduler, Alconna", "standard"),
-        Choice("[full]: 包括 Scheduler, Alconna, FastAPI", "full"),
+        Choice("[standard]: 包括 Scheduler, Richuru", "standard"),
+        Choice("Alconna", "alconna"),
+        Choice("FastAPI", "fastapi"),
     ],
     default=[0],
-    validator=lambda x: len(x) <= 1,
-    range=(0, 1),
-    overflow_action=deque.popleft,
 )
-
-app = typer.Typer()
 
 
 def toml_exist():
@@ -51,23 +46,25 @@ def pdm():
     pprint("<green>添加依赖...</green>")
     pprint(extras_intro, "")
     extra = extra_prompt.prompt()
+    format_tools = BooleanPrompt("是否添加 black 与 isort 到开发依赖？", default=True).prompt(default=True)
     subprocess.run(
         (
             (
                 [
                     "pdm",
                     "add",
-                    f"graia-ariadne{f'[{extra[0].data}]' if extra else ''}",
+                    f"""graia-ariadne{f"[{','.join(e.data for e in extra)}]" if extra else ''}""",
                 ]
-                + ([] if extra else ["graia-saya"])
+                + []
+                if extra
+                else ["graia-saya"]
             )
             + ["--no-sync", "--save-compatible"]
         )
     )
-
-    format_tools = BooleanPrompt("是否添加 black 与 isort 到开发依赖？", default=True).prompt(default=True)
     if format_tools:
-        subprocess.run(["pdm", "add", "-d", "black", "isort", "--no-sync", "--save-compatible"])
+        subprocess.run(["pdm", "add", "--dev", "black", "isort", "--no-sync", "--save-compatible"])
+
     install = BooleanPrompt("现在安装依赖？你之后可以通过 pdm install 来手动安装", default=True).prompt(default=True)
     if install:
         subprocess.run(["pdm", "install"])
@@ -95,9 +92,10 @@ def poetry():
     pprint("<green>添加依赖...</green>")
     pprint(extras_intro, "")
     extra = extra_prompt.prompt()
+    format_tools = BooleanPrompt("是否添加 black 与 isort 到开发依赖？", default=True).prompt(default=True)
     subprocess.run(
         ["poetry", "add", "graia-ariadne"]
-        + (["-E", extra[0].data] if extra else ["graia-saya"])
+        + (["-E"] + [e.data for e in extra] if extra else ["graia-saya"])
         + [
             "--lock",
             "--ansi",
@@ -118,8 +116,8 @@ def pip():
     raise KeyboardInterrupt  # exit
 
 
-@app.command()
-def init():
+def init(args):
+    """就地创建一个 Graia 项目"""
     pprint("<b><green>使用 Graia 脚手架创建项目...</green></b>")
     choices = SelectPrompt(
         "请选择新项目的包管理器",

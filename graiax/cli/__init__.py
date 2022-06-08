@@ -1,32 +1,28 @@
+import argparse
 import importlib
-from typing import Protocol
-
-import typer
 
 from . import command
-
-app: typer.Typer = typer.Typer()
-
-
-class HasTyperApp(Protocol):
-    @property
-    def app(self) -> typer.Typer:
-        ...
-
-
-@app.callback()
-def finish():
-    """Finish up and cleanup log."""
 
 
 def main():
     # load commands
+    parser = argparse.ArgumentParser(description="GraiaCommunity CLI")
+
+    sub = parser.add_subparsers(help="子命令帮助")
+
+    sub_parsers = {}
 
     for cmd in command.commands:
-        module: HasTyperApp = importlib.import_module(f"{command.__package__}.{cmd}")
-        app.registered_commands += module.app.registered_commands
+        module = importlib.import_module(f"{command.__package__}.{cmd}")
+        func = getattr(module, cmd)
+        sub_parsers[cmd] = sub.add_parser(cmd, help=func.__doc__)
+        sub_parsers[cmd].set_defaults(func=func)
 
-    app()
+    args = parser.parse_args()
+    if "func" in args:
+        args.func(args)
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":
