@@ -130,5 +130,5 @@ dmypy.json
 
 # test / temp
 *.temp
-**temp**
+*/temp/*
 test_env/

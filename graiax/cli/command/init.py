@@ -6,9 +6,8 @@ from pathlib import Path
 import tomlkit
 
 from graiax.cli.prompt import Choice
-
-from ..prompt.export import BooleanPrompt, FChoice, SelectPrompt
-from ..util import pprint
+from graiax.cli.prompt.export import BooleanPrompt, FChoice, SelectPrompt
+from graiax.cli.util import pprint
 
 extras_intro = """<b><cyan>\
 Scheduler: 任务计划器
@@ -54,10 +53,8 @@ def pdm():
                     "pdm",
                     "add",
                     f"""graia-ariadne{f"[{','.join(e.data for e in extra)}]" if extra else ''}""",
+                    "graiax-ignite",
                 ]
-                + []
-                if extra
-                else ["graia-saya"]
             )
             + ["--no-sync", "--save-compatible"]
         )
@@ -94,9 +91,11 @@ def poetry():
     extra = extra_prompt.prompt()
     format_tools = BooleanPrompt("是否添加 black 与 isort 到开发依赖？", default=True).prompt(default=True)
     subprocess.run(
-        ["poetry", "add", "graia-ariadne"]
-        + (["-E"] + [e.data for e in extra] if extra else ["graia-saya"])
-        + [
+        [
+            "poetry",
+            "add",
+            "graia-ariadne",
+            "graiax-ignite",
             "--lock",
             "--ansi",
         ]

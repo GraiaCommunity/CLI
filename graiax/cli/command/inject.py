@@ -1,22 +1,11 @@
 import os
-import pkgutil
 from pathlib import Path
 
 import tomlkit
 from tomlkit.items import Array, Table
 
-from ..prompt.export import FChoice, SelectPrompt
-from ..util import pprint
-
-
-def scan_modules(seg: list[str], path: str) -> set[str]:
-    """扫描指定目录下的所有模块"""
-    modules = []
-    for _, name, is_pkg in pkgutil.iter_modules([path]):
-        if is_pkg:
-            modules.extend(".".join([name, mod]) for mod in scan_modules(seg + [name], f"{path}/{name}"))
-        modules.append(name)
-    return modules
+from graiax.cli.prompt.export import FChoice, SelectPrompt
+from graiax.cli.util import pprint, scan_modules
 
 
 def inject(args):

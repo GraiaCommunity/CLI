@@ -1,7 +1,7 @@
 from . import Choice, Result_T
-from .boolean import BooleanPrompt
-from .select import SelectPrompt
-from .text import TextPrompt
+from .boolean import BooleanPrompt as BooleanPrompt
+from .select import SelectPrompt as SelectPrompt
+from .text import TextPrompt as TextPrompt
 
 
 class FChoice(Choice[Result_T]):
